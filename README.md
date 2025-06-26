@@ -54,7 +54,7 @@ This is compiled to:
 ### Declaring tags
 - HTML uses tags to structure content on the page.
 - Cooked renders tags once on each line instead of closing the tag, like so:
-```js
+```yaml
 h1: Hello World
 ```
 - Which will compile to:
@@ -72,7 +72,7 @@ body {
 ### Variables
 - Unlike HTML, cooked supports variable assignment. 
 - Declare variables by making a $vars block at the top of your file.
-```js
+```yaml
 $vars {
     name = 'User'
     className = 'container'
@@ -80,20 +80,20 @@ $vars {
 ```
 
 - Access these variables by prefacing them with a $, then the name:
-```js
+```yaml
 h1: Hello, $name
 ```
 
 ### Unique quirks
 #### Single Line Tags
 - Tags only span a single line, so code like:
-```js
+```yaml
 h1:
 a href="google.com": Click to google!
 ```
 - would compile, but will keep `a` the default size instead of h1.
 - Instead, place tags inside of each other on a line, like so:
-```js
+```yaml
 h1: a href="google.com": Click to google! 
 ```
 
