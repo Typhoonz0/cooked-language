@@ -1,0 +1,29 @@
+// website - you can find it on https://xliam.space
+
+head {
+    link rel="stylesheet" href="style.css":
+    title: @xliam1
+}
+
+body {
+    h1: "Liam's Website"
+    p: "I code things (:"
+    h3: "Stuff"
+        dt: a href="programs.html": Programs 
+        dd: Software I used 
+        dt: a href="https://github.com/Typhoonz0": Github
+        dd: My Github profile
+        dt: a href="https://open.spotify.com/user/31f73romnhft7pojjsiwy3g5e54e?si=20d0d0c6756341f0": 'Spotify'
+        dd: Music I listen/listened to
+        dt: a href="legacy/index.html": The Old Website
+        dd: I opted for a more minimal style. You can still see the old one here.
+    h3: "Featured Code"
+        dt: a href="https://github.com/Typhoonz0/archfr": ArchFR
+        dd: Automated Arch Linux install scripts with my config
+        dt: a href="https://github.com/Typhoonz0/ypkg": ypkg
+        dd: My very simple, very insecure package manager
+        dt: a href="https://github.com/Typhoonz0/tx-language": TX
+        dd: My interpreted language interpreted by an interpreted language. Cause why not?
+        dt: a href="sigmaos/index.html": Sigma'OS'
+        dd: A windows 95 esque operating system simulator in the browser 
+}

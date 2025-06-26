@@ -1,0 +1,26 @@
+{
+  "name": "meal-syntax-highlighting",
+  "displayName": "meal Language Support",
+  "description": "Syntax highlighting for the meal programming language",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "meal",
+        "aliases": ["meal", "meal"],
+        "extensions": [".meal"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "meal",
+        "scopeName": "source.meal",
+        "path": "./meal.tmLanguage.json"
+      }
+    ]
+  }
+}
