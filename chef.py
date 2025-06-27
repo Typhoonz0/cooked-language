@@ -192,8 +192,8 @@ class TagBlock(ASTNode):
                     i += 1
 
                 """
-                We now use recursion to loop through each div - this creates double divs when no recursion is involved, but that won't affect the end user - just will make it difficult to debug.
-                Unless divs or other blocks are explicitly called, clones won't be made, thankfully.
+                We now use recursion to loop through each div - this creates double divs if they are nested, when no recursion is involved, but that won't affect the end user - just will make it difficult to debug.
+                Unless nested divs or other blocks are explicitly called, clones won't be made, thankfully.
                 """
                 nested_block = TagBlock(tag_name, inner_lines, attrs)
                 html += nested_block.compile(context)
@@ -227,7 +227,6 @@ class TagBlock(ASTNode):
             - Because we use colons as an operator instead of <tag></tag>'ing content, 
             we need to see where the colons are otherwise when using colons in a regular context, 
             e.g. a URL, it will attempt to end the tag instead of parsing as a literal.
-            Making these helper functions like this and the one above is a lot easier to read, even though I hate nested functions.
             """
             in_single = False
             in_double = False

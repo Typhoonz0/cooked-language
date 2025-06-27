@@ -9,6 +9,7 @@ the cooked programming language
 [Syntax](#syntax-overview) \
 [Structure of the project](#structure-of-the-project) \
 [Usage](#usage) \
+[Building Options]
 [VSCode Syntax](#syntax-highlighting)
 ## What is cooked?
 Cooked is a programming language with a clean syntax for writing HTML. Here's an example:
@@ -54,7 +55,7 @@ This is compiled to:
 ### Declaring tags
 - HTML uses tags to structure content on the page.
 - Cooked renders tags once on each line instead of closing the tag, like so:
-```yaml
+```js
 h1: Hello World
 ```
 - Which will compile to:
@@ -72,7 +73,7 @@ body {
 ### Variables
 - Unlike HTML, cooked supports variable assignment. 
 - Declare variables by making a $vars block at the top of your file.
-```yaml
+```bash
 $vars {
     name = 'User'
     className = 'container'
@@ -80,37 +81,75 @@ $vars {
 ```
 
 - Access these variables by prefacing them with a $, then the name:
-```yaml
+```bash
 h1: Hello, $name
 ```
 
 ### Unique quirks
 #### Single Line Tags
 - Tags only span a single line, so code like:
-```yaml
+```js
 h1:
 a href="google.com": Click to google!
 ```
 - would compile, but will keep `a` the default size instead of h1.
 - Instead, place tags inside of each other on a line, like so:
-```yaml
+```js
 h1: a href="google.com": Click to google! 
 ```
 
-#### Recursive divs (bug)
-- Currently, divs will be compiled twice. This doesn't affect the output for the end user but can make the HTML hard to read.
+#### Recursive nested divs (bug)
+- Currently, nested divs will be compiled twice. This doesn't affect the output for the end user but can make the HTML hard to read.
 
 ## Structure of the project
 #### Cooked is meant to be very modular. The structure is as follows:
 - `chef.py` contains the parser and the compiler for all the code.
-- `serve.py` is an implementation of a build system. You can modify this file to your liking. 
+- `serve.py` is a frontend to `chef.py`. It provides a way to retrive input and output code.
+- `menu.py` is a GNU Make-like clone and is more feature-rich than `serve.py`.
 
-## Usage
-- **Create** a file ending in `.meal`. 
-- `cd` to the directory you downloaded Cooked.
-- `python3 serve.py input.meal` will **compile** `input.meal` into `output.html`. 
-You can specify an output path by adding it as the second argument:
-- `python3 serve.py input.meal custom.html` will **compile** `input.meal` into `custom.html`. 
+## Serve Usage
+- To compile files, you will need a program that 'serves' as a frontend to the chef compiler.
+- Serve does just this.
+- Run in the terminal:
+```bash
+python3 serve.py inputfile.meal outputfile.html
+```
+- Running Serve without an output path is the equivalent of:
+```bash
+python3 serve.py input.meal output.html
+```
+
+## Menu Usage
+- Menu is a build system used to make compiling multiple projects easier by reading a simple script and executing its instructions.
+- It shares the syntax of GNU Make. 
+- Create a file named `Menufile` in the same directory as `menu.py`.
+- Its structure is simple:
+```make
+# Hashtags are comments.
+all:
+  # By default, the 'all' target will be selected first.
+  # Targets are seperated by a blank line.
+  # This will compile website and divs into HTML with one command!
+  tests/website.meal website.html
+  tests/divs.meal divs.html
+
+just-website:
+  tests/website.meal website.html
+
+clean:
+  # Don't want to keep deleting files over and over again?
+  # Just run the 'rm' command in your shell. 
+  # Shell commands start with a lone dollar sign.
+  $ rm -i website.html divs.html
+```
+- Then, run in the terminal:
+```bash
+python3 menu.py 
+```
+- Running the script with no arguments is the equivalent of:
+```bash
+python3 menu.py all
+```
 
 ## Syntax Highlighting
 I provide custom syntax highlighting for VSCode. Simply do the following:

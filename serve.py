@@ -1,7 +1,7 @@
 """
 serve
 .....
-Build system implementation using the chef library.
+Frontend of the chef library.
 I built it with the library <-> endpoint system so users can create their own implementations for their needs, 
 but this example system works decently.
 
@@ -24,7 +24,7 @@ def main():
     # Then, parse the input into abstract syntax:
     ast = parse.parse()
     # Next, initialize the compiler:
-    compile = chef.HTMLCompiler(ast, False)
+    compile = chef.Compiler(ast, False)
     # Compile the output into valid HTML:
     output = compile.compile()
     # Finally, write to the output file:

@@ -1,0 +1,11 @@
+# Example Menufile.
+# Hashtags are comments, $ indicate a command to be run in the shell.
+
+all:
+	tests/website.meal website.html
+
+divs:
+	tests/divs.meal divs.html
+
+clean:
+	$ rm divs.html
