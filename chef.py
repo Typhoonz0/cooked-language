@@ -22,66 +22,72 @@ class ASTNode:
     - Provides a default compile() method that returns an empty string.
     - All node types should inherit from this class.
     """
-    def compile(self, context) -> str:
+    def compile(self) -> str:
         return ""
 
 
 class VariableBlock(ASTNode):
     """
-    VariableBlock(assignments: dict)
     - Represents a block that defines variables using the $vars syntax.
     - Stores variables in a dictionary and updates the context during compilation.
     - Produces no HTML output itself.
     """
-    def __init__(self, assignments) -> None:
+    def __init__(self, assignments: str) -> None:
         self.assignments = assignments
 
-    def compile(self, context) -> str:
+    def compile(self, context: dict) -> str:
         context.update(self.assignments)
         return ""
 
 
 class Parser:
+    """ 
+    - Parses the raw input source text into an Abstract Syntax Tree (AST) <br>
+    - Detects both $vars blocks and named tag blocks <br>
+    - Each block becomes an instance of VariableBlock or TagBlock <br>
     """
-    Parser(source: str)
-    - Parses the raw input source text into an Abstract Syntax Tree (AST)
-    - Detects both $vars blocks and named tag blocks
-    - Each block becomes an instance of VariableBlock or TagBlock
-    """
-    def __init__(self, source, debug) -> None:
+    def __init__(self, source: str, debug: bool) -> None:
         self.source = source
         self.debug = debug
 
     def parse(self) -> list:
         """
-        parse() -> list
-        - Uses a regular expression to find all blocks in the source
-        - Returns a list of ASTNode instances (VariableBlock and TagBlock)
+        - Uses a regular expression to find all blocks in the source <br>
+        - Returns a list of ASTNode instances (VariableBlock and TagBlock) <br>
         """
         ast = []
-        """Unholy regular expression - matches non-comment lines, capturing tag names with ascii word args followed by opening bracket, their inner content, and the corresponding closing bracket."""
+        """
+        Unholy regular expression - matches non-comment lines, 
+        capturing tag names with ascii word args followed by opening bracket, 
+        their inner content, and the corresponding closing bracket.
+        """
         blocks = re.findall(
-    r'^(?!\s*//)\s*(\$\w+|\w+(?:\s+[^\[{]*)?)\s*(\{|\[)(.*?)(\}|\])',
-    self.source,
-    re.DOTALL | re.MULTILINE
+        r'^(?!\s*//)\s*(\$\w+|\w+(?:\s+[^\[{]*)?)\s*(\{|\[)(.*?)(\}|\])',
+        self.source,
+        re.DOTALL | re.MULTILINE
         )
         for tag_raw, _, content, _ in blocks:
             if self.debug: print(f"Found {RED}block{RESET} with tag {CYAN}{tag_raw}{RESET} with content: {content}")
             lines = [line.strip() for line in content.strip().splitlines() if line.strip()]
+            """
+            If we found a variable, or the $vars block, parse assignments.
+            """
             if tag_raw.startswith('$'):
                 assignments = self._parse_vars(lines)
-                if self.debug: print(f"{CYAN}Parses{RESET} to: ", assignments)
+                if self.debug: print(f"{CYAN}Parses{RESET} to:", assignments)
                 ast.append(VariableBlock(assignments))
             else:
+                """
+                Otherwise, parse nested blocks.
+                """
                 tag_name, attributes = self.parseWithAttrs(tag_raw)
-                if self.debug:  print(f"{CYAN}Parses{RESET} to:", tag_name, lines, attributes)
+                if self.debug: print(f"{CYAN}Parses{RESET} to:", tag_name, lines, attributes)
                 ast.append(TagBlock(tag_name, lines, attributes))
         return ast 
 
     
     def parseWithAttrs(self, tag_raw: str) -> tuple:
         """
-        parseWithAttrs() -> tuple
         - Parses tag names and attributes from:
         'a href="link"'
         'a href=//github.com'
@@ -120,9 +126,8 @@ class Parser:
 
         return tag_name, attributes
 
-    def _parse_vars(self, lines) -> dict:
+    def _parse_vars(self, lines: str) -> dict:
         """
-        _parse_vars(lines: list[str]) -> dict
         - Parses lines from a $vars block
         - Extracts variable assignments of the form key = 'value'
         - Returns a dictionary of variable names and their values
@@ -134,18 +139,21 @@ class Parser:
                 variables[key] = value.strip("'\"")
         return variables
 
-class TagBlock:
+class TagBlock(ASTNode):
     """
-    TagBlock(tag_name: str, content_lines: list, attributes: dict)
-    - Represents a generic HTML block (e.g., head, body, section, div)
-    - Supports optional attributes (class, id) parsed from tag headers
+    - Represents a generic HTML block (e.g., head, body, section, div) <br>
+    - Supports optional attributes (class, id) parsed from tag headers <br>
     """
-    def __init__(self, tag_name, content_lines, attributes=None) -> None:
+    def __init__(self, tag_name: str, content_lines: list, attributes: dict = None) -> None:
         self.tag_name = tag_name
         self.content_lines = content_lines
         self.attributes = attributes or {}
 
-    def compile(self, context) -> str:
+    def compile(self, context: dict) -> str:
+        """
+        Compiles the abstract syntax into valid HTML. <br>
+        First finds and compiles attributes, then div blocks, then returns valid HTML. <br>
+        """
         attr_str = ''.join(
             f' {key}="{self.interpolate(value, context)}"' for key, value in self.attributes.items()
         )
@@ -199,7 +207,7 @@ class TagBlock:
         html += f"</{self.tag_name}>\n"
         return html
 
-    def _compileNested(self, line, context) -> str:
+    def _compileNested(self, line: str, context: dict) -> str:
         """
         Recursively compiles lines with nested tags like:
         a href="link": Text
@@ -207,14 +215,14 @@ class TagBlock:
         As you can tell by the nested code below, this was not fun.
         """
 
-        def isQuoted(s):
+        def isQuoted(s: str):
             """
             Self explanatory, returns True if the string is quoted.
             We don't need to make this local since the function is already nested within a local function.
             """
             return (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'"))
 
-        def findColon(s):
+        def findColon(s: str):
             """
             - Because we use colons as an operator instead of <tag></tag>'ing content, 
             we need to see where the colons are otherwise when using colons in a regular context, 
@@ -281,29 +289,26 @@ class TagBlock:
 
         return tag_name, attributes
 
-    def interpolate(self, text, context) -> str:
+    def interpolate(self, text: str, context: dict) -> str:
         """
-        interpolate(text: str, context: dict) -> str
         - Replaces $variables with their values from context
         """
         return re.sub(r'\$(\w+)', lambda m: context.get(m.group(1), f"${m.group(1)}"), text)
 
-class HTMLCompiler:
+class Compiler:
     """
-    HTMLCompiler(ast: list)
     - Walks through the AST and compiles it into a valid HTML string
     - Maintains a context dictionary for resolving $variables
     """
-    def __init__(self, ast, debug) -> None:
+    def __init__(self, ast: dict, debug: bool) -> None:
         self.ast = ast
         self.context = {}
         self.debug = debug
 
     def compile(self) -> str:
         """
-        compile() -> str
         - Iterates over all AST nodes and compiles them in order
-        - Prepends a <!DOCTYPE html> and wraps everything in <html></html>
+        - Prepends a `<!DOCTYPE html>` and wraps everything in `<html></html>`
         - Returns the final HTML string.
         """
         html = "<!--Compiled with chef.py with the cooked programming language.-->\n<!DOCTYPE html>\n<html>\n"
