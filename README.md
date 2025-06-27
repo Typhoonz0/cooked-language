@@ -8,8 +8,8 @@ the cooked programming language
 [What is cooked?](#what-is-cooked) \
 [Syntax](#syntax-overview) \
 [Structure of the project](#structure-of-the-project) \
-[Usage](#usage) \
-[Building Options]
+[Basic Compilation](#serve-usage) \
+[Advanced Compilation](#menu-usage) \
 [VSCode Syntax](#syntax-highlighting)
 ## What is cooked?
 Cooked is a programming language with a clean syntax for writing HTML. Here's an example:
