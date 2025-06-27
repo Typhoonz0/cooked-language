@@ -95,7 +95,6 @@ class TagBlock:
 
     def interpolate(self, text: str, context: dict) -> str: ...
     """
-    interpolate(text: str, context: dict) -> str
     - Replaces $variables with their values from context
     """
 
