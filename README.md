@@ -144,7 +144,7 @@ clean:
 ```
 - Then, run in the terminal:
 ```bash
-python3 menu.py 
+python3 menu.py target
 ```
 - Running the script with no arguments is the equivalent of:
 ```bash
