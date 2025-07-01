@@ -13,8 +13,6 @@ body {
         dd: Software I used 
         dt: a href="https://github.com/Typhoonz0": Github
         dd: My Github profile
-        dt: a href="https://open.spotify.com/user/31f73romnhft7pojjsiwy3g5e54e?si=20d0d0c6756341f0": 'Spotify'
-        dd: Music I listen/listened to
         dt: a href="legacy/index.html": The Old Website
         dd: I opted for a more minimal style. You can still see the old one here.
     h3: "Featured Code"
